@@ -73,7 +73,8 @@ namespace P2.WebAPI
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("P2Auth")));
+                    Configuration.GetConnectionString("P2Auth")),
+                ServiceLifetime.Transient);
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
