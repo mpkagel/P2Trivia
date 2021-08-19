@@ -39,9 +39,8 @@ namespace P2.WebAPI
                 {
                     builder.WithOrigins(new[]
                     {
-                        //Configuration["P2MVCCORSURL"],
-                        //Configuration["P2AngularCORSURL"]
-                        "https://p2mvctrivia.azurewebsites.net"
+                        Configuration["P2MVCCORSURL"],
+                        Configuration["P2AngularCORSURL"]
                     })
                         .AllowAnyHeader()
                         .AllowAnyMethod()
@@ -74,7 +73,7 @@ namespace P2.WebAPI
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration["P2Auth"]));
+                    Configuration.GetConnectionString("P2Auth")));
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
@@ -88,7 +87,7 @@ namespace P2.WebAPI
             
 
             services.AddDbContext<Project2Context>(builder =>
-                builder.UseSqlServer(Configuration["P2App"]));
+                builder.UseSqlServer(Configuration.GetConnectionString("P2App")));
 
             var cookieName = Configuration["AuthCookieName"];
             services.ConfigureApplicationCookie(options =>

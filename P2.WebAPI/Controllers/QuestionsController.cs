@@ -23,13 +23,6 @@ namespace P2.WebAPI.Controllers
             _logger = logger;
         }
 
-        // GET: api/Questions
-        [HttpGet]
-        public IEnumerable<QuestionsModel> Get()
-        {
-            return questionsRepo.GetQuestionByDifficultyAndCategory(1, "Movie");
-        }
-
         // GET: api/Questions/5
         [HttpGet("{id}", Name = "GetQuestionById")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
