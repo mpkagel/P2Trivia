@@ -171,7 +171,7 @@ namespace P2.WebAPI.Controllers
                     }
                 }
 
-                await SignInManager.SignInAsync(user, false);
+                //await SignInManager.SignInAsync(user, false);
 
                 await _usersRepo.AddAsync(new UsersModel
                 {
