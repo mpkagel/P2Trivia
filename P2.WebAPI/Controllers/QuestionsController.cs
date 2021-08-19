@@ -28,6 +28,7 @@ namespace P2.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<QuestionsModel> GetById(int id)
         {
+            _logger.LogError("Get Question By Id Endpoint");
             return questionsRepo.GetQuestionById(id);
         }
 
