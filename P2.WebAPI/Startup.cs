@@ -39,8 +39,8 @@ namespace P2.WebAPI
                 {
                     builder.WithOrigins(new[]
                     {
-                        "https://localhost:44362",
-                        "https://localhost:4200"
+                        Configuration["P2MVCCORSURL"],
+                        Configuration["P2AngularCORSURL"]
                     })
                         .AllowAnyHeader()
                         .AllowAnyMethod()
