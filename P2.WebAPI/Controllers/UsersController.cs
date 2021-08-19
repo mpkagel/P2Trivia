@@ -56,7 +56,6 @@ namespace P2.WebAPI.Controllers
             // we have User.Identity.IsAuthenticated
             // User.IsInRole("admin")
             // User.Identity.Name
-            _logger.LogError("Running details");
             if (!User.Identity.IsAuthenticated)
             {
                 //_logger.LogInformation("");
