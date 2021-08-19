@@ -57,6 +57,7 @@ namespace P2.WebAPI.Controllers
             // User.IsInRole("admin")
             // User.Identity.Name
             //logger.Info("Running details");
+            _logger.LogDebug("api details");
             if (!User.Identity.IsAuthenticated)
             {
                 //_logger.LogInformation("");
