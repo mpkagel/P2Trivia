@@ -116,7 +116,6 @@ namespace P2.DAL
             LastName = users.LastName,
             Username = users.Username,
             Pw = users.PW,
-            //CreditCardNumber = users.CreditCardNumber,
             PointTotal = users.PointTotal,
             AccountType = users.AccountType
 
@@ -129,7 +128,6 @@ namespace P2.DAL
             LastName = users.LastName,
             Username = users.Username,
             PW = users.Pw,
-            //CreditCardNumber = users.CreditCardNumber,
             PointTotal = users.PointTotal,
             AccountType = users.AccountType
         };

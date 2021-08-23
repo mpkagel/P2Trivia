@@ -86,9 +86,9 @@ namespace P2.WebAPI
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             
-
-            services.AddDbContext<Project2Context>(builder =>
-                builder.UseSqlServer(Configuration.GetConnectionString("P2App")));
+            services.AddDbContext<Project2Context>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("P2App")),
+                ServiceLifetime.Transient);
 
             var cookieName = Configuration["AuthCookieName"];
             services.ConfigureApplicationCookie(options =>
@@ -117,8 +117,6 @@ namespace P2.WebAPI
                     }
                 };
             });
-
-            ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -138,7 +136,7 @@ namespace P2.WebAPI
                 app.UseHsts();
             }
 
-            app.UseCors("AllowAll");//MyAllowSpecificOrigins); 
+            app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -150,7 +148,6 @@ namespace P2.WebAPI
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapRazorPages();
                 endpoints.MapControllers();
             });
         }
