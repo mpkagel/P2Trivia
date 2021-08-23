@@ -104,7 +104,7 @@ namespace P2.WebAPI.Controllers
                     return Unauthorized(); // 401 for login failure
                 }
                 Request.Headers.TryGetValue("origin", out var originValue);
-                if (originValue.ToString() == Configuration["P2AngularCORSURL"])
+                if (originValue.ToString() == Configuration["P2AngularCORSURL"] || originValue.ToString() == Configuration["P2AngularCORSURL2"])
                 {
                     Response.Headers.TryGetValue("Set-Cookie", out var headerValue);
                     string newHeaderValue = headerValue.ToString().Replace("samesite=lax", "samesite=none");
