@@ -73,8 +73,7 @@ namespace P2.WebAPI
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("P2Auth")),
-                ServiceLifetime.Transient);
+                    Configuration.GetConnectionString("P2Auth")));
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
@@ -87,8 +86,7 @@ namespace P2.WebAPI
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             
             services.AddDbContext<Project2Context>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("P2App")),
-                ServiceLifetime.Transient);
+                options.UseSqlServer(Configuration.GetConnectionString("P2App")));
 
             var cookieName = Configuration["AuthCookieName"];
             services.ConfigureApplicationCookie(options =>

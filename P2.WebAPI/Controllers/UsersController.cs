@@ -18,6 +18,7 @@ using System.Security.Claims;
 using System.Net;
 using NLog;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace P2.WebAPI.Controllers
 {
@@ -34,14 +35,12 @@ namespace P2.WebAPI.Controllers
 
         public UsersController(IUsersRepo newUsersRepo,
             IUserQuizzesRepo newUserQuizzesRepo,
-            //ApplicationDbContext dbContext,
             ILogger<UsersController> logger,
             IConfiguration configuration)
         {
             _usersRepo = newUsersRepo;
             _userQuizzesRepo = newUserQuizzesRepo;
             _logger = logger;
-            //dbContext.Database.EnsureCreated();
             Configuration = configuration;
         }
 
@@ -85,34 +84,35 @@ namespace P2.WebAPI.Controllers
         [HttpPost("[action]")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] AuthLogin login,
-            [FromServices] RoleManager<IdentityRole> roleManager,
             [FromServices] UserManager<IdentityUser> userManager,
-            [FromServices] SignInManager<IdentityUser> signInManager,
-            [FromServices] ApplicationDbContext dbContext
-            )
+            [FromServices] SignInManager<IdentityUser> signInManager)
         {
-            dbContext.Database.EnsureCreated();
-
-            if (userManager.FindByNameAsync(login.Username) != null &&
-                _usersRepo.CheckUserByName(login.Username))
+            if (_usersRepo.CheckUserByName(login.Username))
             {
-                SignInResult result = await signInManager.PasswordSignInAsync(
-                login.Username, login.Password, login.RememberMe, false);
-
-                if (!result.Succeeded)
+                if (await userManager.FindByNameAsync(login.Username) != null)
                 {
-                    return Unauthorized(); // 401 for login failure
-                }
-                Request.Headers.TryGetValue("origin", out var originValue);
-                if (originValue.ToString() == Configuration["P2AngularCORSURL"] || originValue.ToString() == Configuration["P2AngularCORSURL2"])
-                {
-                    Response.Headers.TryGetValue("Set-Cookie", out var headerValue);
-                    string newHeaderValue = headerValue.ToString().Replace("samesite=lax", "samesite=none");
-                    Response.Headers.Remove("Set-Cookie");
-                    Response.Headers.Add("Set-Cookie", newHeaderValue);
-                }
+                    SignInResult result = await signInManager.PasswordSignInAsync(
+                    login.Username, login.Password, login.RememberMe, false);
 
-                return NoContent();
+                    if (!result.Succeeded)
+                    {
+                        return Unauthorized(); // 401 for login failure
+                    }
+                    Request.Headers.TryGetValue("origin", out var originValue);
+                    if (originValue.ToString() == Configuration["P2AngularCORSURL"] || originValue.ToString() == Configuration["P2AngularCORSURL2"])
+                    {
+                        Response.Headers.TryGetValue("Set-Cookie", out var headerValue);
+                        string newHeaderValue = headerValue.ToString().Replace("samesite=lax", "samesite=none");
+                        Response.Headers.Remove("Set-Cookie");
+                        Response.Headers.Add("Set-Cookie", newHeaderValue);
+                    }
+
+                    return NoContent();
+                }
+                else
+                {
+                    return Forbid();
+                }
             }
             else
             {
@@ -124,12 +124,8 @@ namespace P2.WebAPI.Controllers
         [HttpPost("[action]")]
         [AllowAnonymous]
         public async Task<IActionResult> Logout(
-            [FromServices] SignInManager<IdentityUser> signInManager,
-            [FromServices] ApplicationDbContext dbContext
-            )
+            [FromServices] SignInManager<IdentityUser> signInManager)
         {
-            dbContext.Database.EnsureCreated();
-
             await signInManager.SignOutAsync();
 
             return NoContent();
@@ -141,12 +137,8 @@ namespace P2.WebAPI.Controllers
         public async Task<IActionResult> Register(AuthRegister register,
             [FromServices] RoleManager<IdentityRole> roleManager,
             [FromServices] UserManager<IdentityUser> userManager,
-            [FromServices] SignInManager<IdentityUser> signInManager,
-            [FromServices] ApplicationDbContext dbContext
-            )
+            [FromServices] SignInManager<IdentityUser> signInManager)
         {
-            dbContext.Database.EnsureCreated();
-
             if (await userManager.FindByNameAsync(register.Username) == null)
             {
                 var user = new IdentityUser { UserName = register.Username };
@@ -237,10 +229,8 @@ namespace P2.WebAPI.Controllers
         public async Task<ActionResult> EditUser([FromBody] UsersModel usersModel)
         {
             UsersModel currentUser = await _usersRepo.GetUserByName(usersModel.Username);
-
             currentUser.FirstName = usersModel.FirstName;
             currentUser.LastName = usersModel.LastName;
-            
 
             await _usersRepo.EditUserAsync(currentUser);
 
@@ -250,7 +240,6 @@ namespace P2.WebAPI.Controllers
         [HttpPut("UserQuiz/{actualScore}", Name = "EditUserQuizScore")]
         public async Task<ActionResult> EditUserQuizScore(int actualScore)
         {
-
             UserQuizzesModel userQuiz = _userQuizzesRepo.GetLastQuiz();
             userQuiz.QuizActualScore = actualScore;
 
@@ -262,11 +251,8 @@ namespace P2.WebAPI.Controllers
         public async Task<IActionResult> DeleteUser(UsersModel usersModel,
             [FromServices] RoleManager<IdentityRole> roleManager,
             [FromServices] UserManager<IdentityUser> userManager,
-            [FromServices] SignInManager<IdentityUser> signInManager,
-            [FromServices] ApplicationDbContext dbContext
-            )
+            [FromServices] SignInManager<IdentityUser> signInManager)
         {
-            dbContext.Database.EnsureCreated();
             await signInManager.SignOutAsync();
 
             UsersModel currentUser = await _usersRepo.GetUserByName(usersModel.Username);
